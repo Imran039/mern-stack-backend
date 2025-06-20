@@ -1,10 +1,13 @@
 const dotenv = require("dotenv");
 const path = require("path");
 
-const result = dotenv.config({ path: path.resolve(__dirname, "../.env") });
+// Only load .env file in development environment
+if (process.env.NODE_ENV !== "production") {
+  const result = dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-if (result.error) {
-  throw result.error;
+  if (result.error) {
+    throw result.error;
+  }
 }
 
 module.exports = {
