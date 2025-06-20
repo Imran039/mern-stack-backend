@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // CREATE - POST /api/products
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const { title, image, description, price } = req.body;
 
@@ -34,10 +35,48 @@ router.post("/", async (req, res) => {
 });
 
 // READ ALL - GET /api/products
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
-    res.json(products);
+    const { keyword, page = 1, limit = 10, sort } = req.query;
+
+    let query = {};
+
+    if (keyword) {
+      query = {
+        $or: [
+          { title: { $regex: keyword, $options: "i" } },
+          { description: { $regex: keyword, $options: "i" } },
+        ],
+      };
+    }
+
+    const sortOptions = {};
+    if (sort) {
+      const parts = sort.split(",");
+      parts.forEach((part) => {
+        if (part.startsWith("-")) {
+          sortOptions[part.substring(1)] = -1;
+        } else {
+          sortOptions[part] = 1;
+        }
+      });
+    } else {
+      sortOptions.createdAt = -1; // Default sort
+    }
+
+    const products = await Product.find(query)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort(sortOptions)
+      .exec();
+
+    const count = await Product.countDocuments(query);
+
+    res.json({
+      products,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: "Server error" });
@@ -45,7 +84,7 @@ router.get("/", async (req, res) => {
 });
 
 // READ ONE - GET /api/products/:id
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -62,7 +101,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE - PUT /api/products/:id
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { title, image, description, price } = req.body;
 
@@ -98,7 +137,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE - DELETE /api/products/:id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
 
