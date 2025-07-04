@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
 const authMiddleware = require("../middleware/authMiddleware");
+const { validateProduct } = require("../validators/productValidators");
 
 // CREATE - POST /api/products
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, validateProduct, async (req, res) => {
   try {
     const { title, image, description, price } = req.body;
 
@@ -101,7 +102,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // UPDATE - PUT /api/products/:id
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, validateProduct, async (req, res) => {
   try {
     const { title, image, description, price } = req.body;
 
