@@ -34,6 +34,9 @@ const swaggerOptions = {
     },
     servers: [
       {
+        url: "https://mern-stack-backend-hc8u.onrender.com",
+      },
+      {
         url: "http://localhost:" + PORT,
       },
     ],
@@ -52,10 +55,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: [
-    path.join(__dirname, "./routes/*.js"),
-    path.join(__dirname, "./models/*.js"),
-  ],
+  apis: ["./routes/*.js", "./models/*.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
