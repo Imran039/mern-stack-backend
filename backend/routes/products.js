@@ -1,9 +1,3 @@
-const express = require("express");
-const router = express.Router();
-const Product = require("../models/Product");
-const authMiddleware = require("../middleware/authMiddleware");
-const { validateProduct } = require("../validators/productValidators");
-
 /**
  * @swagger
  * /api/products:
@@ -135,6 +129,12 @@ const { validateProduct } = require("../validators/productValidators");
  *       404:
  *         description: Product not found
  */
+const express = require("express");
+const router = express.Router();
+const Product = require("../models/Product");
+const authMiddleware = require("../middleware/authMiddleware");
+const { validateProduct } = require("../validators/productValidators");
+
 // CREATE - POST /api/products
 router.post("/", authMiddleware, validateProduct, async (req, res) => {
   try {

@@ -1,14 +1,3 @@
-const express = require("express");
-const router = express.Router();
-const { check, validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const {
-  validateRegister,
-  validateLogin,
-} = require("../validators/authValidators");
-
 /**
  * @swagger
  * /api/auth/register:
@@ -65,6 +54,17 @@ const {
  *       400:
  *         description: Invalid credentials or validation error
  */
+const express = require("express");
+const router = express.Router();
+const { check, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const {
+  validateRegister,
+  validateLogin,
+} = require("../validators/authValidators");
+
 // @route   POST api/auth/register
 // @desc    Register a user
 // @access  Public
